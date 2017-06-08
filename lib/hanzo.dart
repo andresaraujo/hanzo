@@ -1,4 +1,4 @@
-library hanzo0;
+library hanzo;
 
 import 'dart:async';
 import 'dart:io';
@@ -18,15 +18,15 @@ Future<Null> remove(List<String> hooksToRemove) async {
   return hooks.where((h) => hooksToRemove.contains(h)).forEach(removeHook);
 }
 
-Future<Null> createHook(String hookName) async {
+Future<Null> createHook(String hookName, {hooksDirectory: '.git/hooks'}) async {
   print('Installing hook: $hookName');
-  final hookFile = new File('.git/hooks/$hookName');
+  final hookFile = new File('$hooksDirectory/$hookName');
 
   if (!hookFile.existsSync()) {
     hookFile.create(recursive: true);
     print(hookFile.path);
   } else {
-    final backup = new File('.git/hooks/$hookName.bak');
+    final backup = new File('$hooksDirectory/$hookName.bak');
     if (!backup.existsSync()) {
       backup.writeAsStringSync(hookFile.readAsStringSync());
     }
@@ -37,9 +37,9 @@ Future<Null> createHook(String hookName) async {
   hookFile.writeAsStringSync(getHookScript(hookName.replaceAll('-', '_')));
 }
 
-Future<Null> removeHook(String hookName) async {
+Future<Null> removeHook(String hookName, {hooksDirectory: '.git/hooks'}) async {
   print('Removing hook: $hookName');
-  final hookFile = new File('.git/hooks/$hookName');
+  final hookFile = new File('$hooksDirectory/$hookName');
   hookFile.deleteSync();
 }
 

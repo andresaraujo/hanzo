@@ -52,7 +52,7 @@ class RemoveCommand extends Command {
 }
 
 bool isGitProject() {
-  if (!new Directory('.git').existsSync()) {
+  if (!FileSystemEntity.isDirectorySync('.git')) {
     print('.git directory not found!');
     print('Did you forgot to initialize git in your project?');
     exitCode = 1;
