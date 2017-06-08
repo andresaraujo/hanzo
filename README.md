@@ -1,16 +1,27 @@
-# hanzo0
+# hanzo
 
-A library for Dart developers. It is awesome.
+A library to easily use git hooks from dart
 
-## Usage
+## Install
 
-A simple usage example:
+To start using hanzo, add it to your `dev_dependencies`
 
-    import 'package:hanzo0/hanzo0.dart';
+To install hooks in your project, run:
 
-    main() {
-      var awesome = new Awesome();
-    }
+    $ pub run hanzo install
+    
+Now create a matching git hook dart file in `./tool` directory (create if needed).
+    
+Example:
+    
+    // in ./tool/pre_commit.dart
+    main(List<String> arguments) => 
+        print("I'll run before a commit is made!");
+
+    // in ./tool/commit_msg.dart
+    main(List<String> arguments) => 
+        print("I'll run after commit message is entered!");
+
 
 ## Features and bugs
 
