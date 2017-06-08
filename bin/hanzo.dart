@@ -5,9 +5,10 @@ import 'package:args/command_runner.dart';
 import 'package:hanzo/hanzo.dart';
 
 void main(List<String> arguments) {
-  final runner = new CommandRunner("git", "Distributed version control.")
-    ..addCommand(new InstallCommand())
-    ..addCommand(new RemoveCommand());
+  final runner =
+      new CommandRunner("hanzo", "A tool to use git hooks from Dart.")
+        ..addCommand(new InstallCommand())
+        ..addCommand(new RemoveCommand());
 
   runner.run(arguments).catchError((error) {
     if (error is! UsageException) throw error;
