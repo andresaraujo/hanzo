@@ -1,6 +1,6 @@
 # hanzo
 
-A library to easily use git hooks from dart
+A library to easily use git hooks from Dart
 
 ## Install
 
@@ -27,4 +27,4 @@ Example:
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
-[tracker]: http://example.com/issues/replaceme
+[tracker]: https://github.com/andresaraujo/hanzo/issues
