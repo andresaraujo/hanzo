@@ -23,6 +23,7 @@ class InstallCommand extends Command {
 
   InstallCommand() {
     argParser
+      ..addFlag('precommit-sample', defaultsTo: false)
       ..addOption('hook', abbr: 'k', defaultsTo: 'all', allowMultiple: true);
   }
 
@@ -30,7 +31,8 @@ class InstallCommand extends Command {
     if (!isGitProject()) {
       return;
     }
-    install(argResults['hook']);
+    install(argResults['hook'],
+        addPrecommitSample: argResults['precommit-sample']);
   }
 }
 

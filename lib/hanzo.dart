@@ -4,11 +4,28 @@ import 'dart:async';
 import 'dart:io';
 import 'package:command_wrapper/command_wrapper.dart';
 
-Future<Null> install(List<String> hooksToAdd) async {
+Future<Null> install(List<String> hooksToAdd,
+    {bool addPrecommitSample: false}) async {
   if (hooksToAdd[0] == 'all') {
-    return hooks.forEach(createHook);
+    hooks.forEach(createHook);
   }
-  return hooks.where((h) => hooksToAdd.contains(h)).forEach(createHook);
+
+  hooks.where((h) => hooksToAdd.contains(h)).forEach(createHook);
+
+  if (addPrecommitSample) {
+    print('Creating pre-commit Dart script sample');
+    createDartScripSample();
+  }
+}
+
+void createDartScripSample() {
+  final dartFile = new File('./tool/pre_commit.dart');
+  if (dartFile.existsSync()) {
+    return;
+  }
+
+  dartFile.createSync(recursive: true);
+  dartFile.writeAsStringSync(dartPrecommitSample);
 }
 
 Future<Null> remove(List<String> hooksToRemove) async {
@@ -18,7 +35,8 @@ Future<Null> remove(List<String> hooksToRemove) async {
   return hooks.where((h) => hooksToRemove.contains(h)).forEach(removeHook);
 }
 
-Future<Null> createHook(String hookName, {hooksDirectory: '.git/hooks'}) async {
+Future<Null> createHook(String hookName,
+    {String hooksDirectory: '.git/hooks'}) async {
   print('Installing hook: $hookName');
   final hookFile = new File('$hooksDirectory/$hookName');
 
@@ -37,7 +55,8 @@ Future<Null> createHook(String hookName, {hooksDirectory: '.git/hooks'}) async {
   hookFile.writeAsStringSync(getHookScript(hookName.replaceAll('-', '_')));
 }
 
-Future<Null> removeHook(String hookName, {hooksDirectory: '.git/hooks'}) async {
+Future<Null> removeHook(String hookName,
+    {String hooksDirectory: '.git/hooks'}) async {
   print('Removing hook: $hookName');
   final hookFile = new File('$hooksDirectory/$hookName');
   hookFile.deleteSync();
@@ -87,3 +106,11 @@ const hooks = const [
   "pre-auto-gc",
   "post-rewrite"
 ];
+
+const dartPrecommitSample = '''
+
+main(List<String> arguments) {
+  print('This Dart script will run before a commit!');
+}
+
+''';
