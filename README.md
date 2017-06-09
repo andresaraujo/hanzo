@@ -14,6 +14,7 @@ Now create a matching git hook dart file in `./tool` directory (create if needed
     
 Example:
     
+```dart
     // in ./tool/pre_commit.dart
     main(List<String> arguments) => 
         print("I'll run before a commit is made!");
@@ -21,6 +22,7 @@ Example:
     // in ./tool/commit_msg.dart
     main(List<String> arguments) => 
         print("I'll run after commit message is entered!");
+```
         
 
 ### Install options
