@@ -2,15 +2,13 @@ library hanzo;
 
 import 'dart:async';
 import 'dart:io';
-import 'package:command_wrapper/command_wrapper.dart';
 
-Future<Null> install(List<String> hooksToAdd,
-    {bool addPrecommitSample: false}) async {
-  if (hooksToAdd[0] == 'all') {
-    hooks.forEach(createHook);
+Future<void> install(Hooks hookToAdd, {bool addPrecommitSample: false}) async {
+  if (hookToAdd == Hooks.all) {
+    Hooks.values.forEach(createHook);
   }
 
-  hooks.where((h) => hooksToAdd.contains(h)).forEach(createHook);
+  createHook(hookToAdd);
 
   if (addPrecommitSample) {
     print('Creating pre-commit Dart script sample');
@@ -28,15 +26,17 @@ void createDartScripSample() {
   dartFile.writeAsStringSync(dartPrecommitSample);
 }
 
-Future<Null> remove(List<String> hooksToRemove) async {
-  if (hooksToRemove[0] == 'all') {
-    return hooks.forEach(removeHook);
+Future<void> remove(Hooks hookToRemove) async {
+  if (hookToRemove == Hooks.all) {
+    return Hooks.values.forEach(removeHook);
   }
-  return hooks.where((h) => hooksToRemove.contains(h)).forEach(removeHook);
+  return removeHook(hookToRemove);
 }
 
-Future<Null> createHook(String hookName,
+Future<void> createHook(Hooks hook,
     {String hooksDirectory: '.git/hooks'}) async {
+  final hookName =
+      hook.toString().replaceAll('Hooks.', '').replaceAll('_', '-');
   print('Installing hook: $hookName');
   final hookFile = new File('$hooksDirectory/$hookName');
 
@@ -49,14 +49,16 @@ Future<Null> createHook(String hookName,
       backup.writeAsStringSync(hookFile.readAsStringSync());
     }
   }
-  final cmd = new CommandWrapper('bash');
-  await cmd.run(['-c', 'chmod +x ${hookFile.path}']);
+  await Process.start('bash', ['-c', 'chmod +x ${hookFile.path}'],
+      runInShell: true);
 
   hookFile.writeAsStringSync(getHookScript(hookName.replaceAll('-', '_')));
 }
 
-Future<Null> removeHook(String hookName,
+Future<void> removeHook(Hooks hook,
     {String hooksDirectory: '.git/hooks'}) async {
+  final hookName =
+      hook.toString().replaceAll('Hooks.', '').replaceAll('_', '-');
   print('Removing hook: $hookName');
   final hookFile = new File('$hooksDirectory/$hookName');
   hookFile.deleteSync();
@@ -86,26 +88,27 @@ fi
 
 ''';
 
-const hooks = const [
-  "applypatch-msg",
-  "pre-applypatch",
-  "post-applypatch",
-  "pre-commit",
-  "prepare-commit-msg",
-  "commit-msg",
-  "post-commit",
-  "pre-rebase",
-  "post-checkout",
-  "post-merge",
-  "pre-push",
-  "pre-receive",
-  "update",
-  "post-receive",
-  "post-update",
-  "push-to-checkout",
-  "pre-auto-gc",
-  "post-rewrite"
-];
+enum Hooks {
+  all,
+  applypatch_msg,
+  commit_msg,
+  post_applypatch,
+  post_checkout,
+  post_commit,
+  post_merge,
+  post_receive,
+  post_rewrite,
+  post_update,
+  pre_applypatch,
+  pre_auto_gc,
+  pre_commit,
+  pre_push,
+  pre_rebase,
+  pre_receive,
+  prepare_commit_msg,
+  push_to_checkout,
+  update,
+}
 
 const dartPrecommitSample = '''
 

@@ -1,64 +1,62 @@
-import 'dart:async';
 import 'dart:io';
-
-import 'package:args/command_runner.dart';
+import 'package:io/ansi.dart';
+import 'package:io/io.dart';
 import 'package:hanzo/hanzo.dart';
 
-void main(List<String> arguments) {
-  final runner =
-      new CommandRunner("hanzo", "A tool to use git hooks from Dart.")
-        ..addCommand(new InstallCommand())
-        ..addCommand(new RemoveCommand());
+import 'package:build_cli_annotations/build_cli_annotations.dart';
 
-  runner.run(arguments).catchError((error) {
-    if (error is! UsageException) throw error;
-    print(error);
-    exit(64); // Exit code 64 indicates a usage error.
-  });
+part 'hanzo.g.dart';
+
+/// Annotation your option class with [CliOptions].
+@CliOptions()
+class Options {
+  /// Customize options and flags by annotating fields with [CliOption].
+  @CliOption(
+      defaultsTo: false,
+      abbr: 's',
+      help: 'If set, creates dummy dart script for the git hook')
+  final bool addSample;
+
+  @CliOption(
+      defaultsTo: Hooks.pre_commit,
+      abbr: 'i',
+      help: 'Creates git hooks scripts in .git/hook .')
+  Hooks install;
+
+  final bool installWasParsed;
+
+  @CliOption(abbr: 'r', help: 'Removes git hooks scripts in .git/hook .')
+  Hooks remove;
+
+  final bool removeWasParsed;
+
+  /// Populates final fields as long as there are matching constructor
+  /// parameters.
+  Options(this.addSample, {this.installWasParsed, this.removeWasParsed});
 }
 
-class InstallCommand extends Command {
-  final name = "install";
-  final description = "Creates git hooks scripts in .git/hook .";
+void main(List<String> args) {
+  Options options;
+  try {
+    options = parseOptions(args);
 
-  InstallCommand() {
-    argParser
-      ..addFlag('precommit-sample', defaultsTo: false)
-      ..addOption('hook', abbr: 'k', defaultsTo: 'all', allowMultiple: true);
-  }
-
-  Future<Null> run() async {
-    if (!isGitProject()) {
-      return;
+    if (options.installWasParsed) {
+      install(options.install, addPrecommitSample: options.addSample);
+    } else if (options.removeWasParsed) {
+      remove(options.remove);
+    } else {
+      _printUsage();
     }
-    install(argResults['hook'],
-        addPrecommitSample: argResults['precommit-sample']);
+  } on FormatException catch (e) {
+    print(red.wrap(e.message));
+    print('');
+    _printUsage();
+    exitCode = ExitCode.usage.code;
+    return;
   }
 }
 
-class RemoveCommand extends Command {
-  final name = "remove";
-  final description = "Removes git hooks scripts in .git/hook .";
-
-  RemoveCommand() {
-    argParser
-      ..addOption('hook', abbr: 'k', defaultsTo: 'all', allowMultiple: true);
-  }
-
-  Future<Null> run() async {
-    if (!isGitProject()) {
-      return;
-    }
-    remove(argResults['hook']);
-  }
-}
-
-bool isGitProject() {
-  if (!FileSystemEntity.isDirectorySync('.git')) {
-    print('.git directory not found!');
-    print('Did you forgot to initialize git in your project?');
-    exitCode = 1;
-    return false;
-  }
-  return true;
+void _printUsage() {
+  print('Usage: example/example.dart [arguments]');
+  print(_$parserForOptions.usage);
 }

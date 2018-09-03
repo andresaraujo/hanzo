@@ -8,9 +8,12 @@ main() async {
 
 testCreateHook() async {
   test('Should create hook file', () async {
-    final hookName = 'pre-commit';
+    final hookName = Hooks.pre_commit
+        .toString()
+        .replaceAll('Hooks.', '')
+        .replaceAll('_', '-');
     final tmp = await Directory.systemTemp.createTemp('hanzo_git_temp_test');
-    await createHook(hookName, hooksDirectory: tmp.path);
+    await createHook(Hooks.pre_commit, hooksDirectory: tmp.path);
 
     final file = new File('${tmp.path}/$hookName');
     expect(file.existsSync(), isTrue);
@@ -22,12 +25,15 @@ testCreateHook() async {
   });
 
   test('Should remove hook file', () async {
-    final hookName = 'pre-commit';
+    final hookName = Hooks.pre_commit
+        .toString()
+        .replaceAll('Hooks.', '')
+        .replaceAll('_', '-');
     final tmp = await Directory.systemTemp.createTemp('hanzo_git_temp_test');
     final file = new File('${tmp.path}/$hookName');
     file.createSync();
 
-    await removeHook(hookName, hooksDirectory: tmp.path);
+    await removeHook(Hooks.pre_commit, hooksDirectory: tmp.path);
     expect(file.existsSync(), isFalse);
 
     await tmp.delete(recursive: true);
