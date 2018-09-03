@@ -55,6 +55,7 @@ ArgParser _$populateOptionsParser(ArgParser parser) => parser
   ..addOption('remove',
       abbr: 'r',
       help: 'Removes git hooks scripts in .git/hook .',
+      defaultsTo: 'all',
       allowed: [
         'all',
         'applypatch_msg',

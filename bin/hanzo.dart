@@ -25,7 +25,10 @@ class Options {
 
   final bool installWasParsed;
 
-  @CliOption(abbr: 'r', help: 'Removes git hooks scripts in .git/hook .')
+  @CliOption(
+      defaultsTo: Hooks.all,
+      abbr: 'r',
+      help: 'Removes git hooks scripts in .git/hook .')
   Hooks remove;
 
   final bool removeWasParsed;

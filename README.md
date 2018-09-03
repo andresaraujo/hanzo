@@ -27,20 +27,26 @@ Example:
 
 ### Install options
 
+
+    $ pub global activate hanzo
+    $ hanzo -i pre_commit -s
+
+
 | Option/Flag | abbreviation | description |
 | -------- | ---------- | ---------- |
-| `--precommit-sample` | none | If flag is passed it will create a sample pre commit Dart script. Defaults to `false` |
-| `--hook <hook-name>` | -k | Creates a bash script for the hook passed, supports passing multiple hooks. Defaults to `all` scripts. Example: `-k pre-commit -k commit-msg` |
+| `--add-sample` | -s | If flag is passed it will create a sample Dart script. Defaults to `false` |
+| `--install <hook_name>` | -i | Creates a bash script for the hook passed. Defaults to `pre_commit` script. Example: `-i pre_commit` |
+| `--remove <hook_name>` | -r | Removes a bash script for the hook passed. Example: `-r pre_commit`. Defaults to `all` |
 
 ## Remove
 
 To remove all hooks in your project, run:
 
-    $ pub run hanzo remove
+    $ hanzo -r
     
 Or if you want to remove a specific hook:
     
-    $ pub run hanzo remove -k pre-commit -k commit-msg
+    $ hanzo -r pre_commit
 
 ## Git Hooks
 
